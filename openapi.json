@@ -1,0 +1,116 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Auth Practice API",
+    "description": "A secure API using Supabase Auth for signup, login, logout, and protected routes.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    { "url": "http://localhost:3000", "description": "Local dev server" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Paste the access_token returned by /api/auth/login."
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/signup": {
+      "post": {
+        "summary": "Create a new user account",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "format": "password" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created successfully" },
+          "400": { "description": "Missing fields or Supabase signup error" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Authenticate a user and return a JWT",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "format": "password" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful, returns access_token and refresh_token" },
+          "400": { "description": "Missing fields" },
+          "401": { "description": "Invalid login credentials" }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "summary": "Terminate the current session",
+        "tags": ["Auth"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "204": { "description": "Logout successful, no content" },
+          "401": { "description": "Missing, invalid, or expired token" }
+        }
+      }
+    },
+    "/api/public/info": {
+      "get": {
+        "summary": "Read public, unprotected data",
+        "tags": ["Public"],
+        "responses": {
+          "200": { "description": "Public welcome message" }
+        }
+      }
+    },
+    "/api/protected/profile": {
+      "get": {
+        "summary": "Read the authenticated user's private profile",
+        "tags": ["Protected"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "User id, email, and created_at" },
+          "401": { "description": "Missing, invalid, or expired token" }
+        }
+      }
+    },
+    "/api/protected/dashboard": {
+      "get": {
+        "summary": "Example second protected route (uses the same middleware)",
+        "tags": ["Protected"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Welcome message for the authenticated user" },
+          "401": { "description": "Missing, invalid, or expired token" }
+        }
+      }
+    }
+  }
+}
