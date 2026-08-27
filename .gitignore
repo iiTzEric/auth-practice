@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+
+# env files - NEVER commit real secrets
+.env
+.env.local
+.env.*.local
+
+# next.js build output
+.next/
+out/
+
+# misc
+.DS_Store
+*.log
